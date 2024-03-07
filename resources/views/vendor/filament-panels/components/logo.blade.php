@@ -1,0 +1,1 @@
+<h1 class="text-2xl font-bold">Uptime <span style="color:#10B981;">You</span></h1>

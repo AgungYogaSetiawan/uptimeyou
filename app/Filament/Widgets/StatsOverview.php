@@ -19,7 +19,7 @@ class StatsOverview extends BaseWidget
                 ->color('danger'),
             Stat::make('Pause', Monitoring::where('status', 'pause')->count())
                 ->description('Status Pause Website')
-                ->color('secondary')
+                ->color('secondary'),
         ];
     }
 }

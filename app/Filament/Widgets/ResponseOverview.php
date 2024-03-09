@@ -15,10 +15,10 @@ class ResponseOverview extends BaseWidget
     protected function getStats(): array
     {
         return [
-            Stat::make('Response Time', '120 ms')
-                ->description('Response Time Website'),
-            Stat::make('Avg Response Time', '110 ms')
-                ->description('Avg Response Time Website'),
+            // Stat::make('Response Time', '120 ms')
+            //     ->description('Response Time Website'),
+            // Stat::make('Avg Response Time', '110 ms')
+            //     ->description('Avg Response Time Website'),
         ];
     }
 }

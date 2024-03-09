@@ -71,7 +71,8 @@ class MonitoringResource extends Resource
                             ->options([
                                 'email' => 'email',
                                 'discord' => 'discord'
-                            ]),
+                            ])
+                            ->columnSpanFull(),
                         RichEditor::make('description')
                             ->columnSpan('full'),
                     ])->columns(2)
@@ -104,10 +105,10 @@ class MonitoringResource extends Resource
                 TextColumn::make('amount_send_notification'),
                 TextColumn::make('status_code'),
                 TextColumn::make('notification'),
-                TextColumn::make('results.response_time')
-                    ->label('Response Time (ms)'),
-                TextColumn::make('results.avg_response_time')
-                    ->label('Avg Response Time (ms)'),
+                // TextColumn::make('results.response_time')
+                //     ->label('Response Time (ms)'),
+                // TextColumn::make('results.avg_response_time')
+                //     ->label('Avg Response Time (ms)'),
                 TextColumn::make('description')
                     ->markdown(),
             ])
@@ -123,7 +124,10 @@ class MonitoringResource extends Resource
                             return $data;
                         }),
                     Tables\Actions\EditAction::make(),
-                    Tables\Actions\DeleteAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                        ->requiresConfirmation(),
+                    Tables\Actions\Action::make('Pause')
+                        ->icon('heroicon-o-pause-circle'),
                 ])
             ])
             ->bulkActions([

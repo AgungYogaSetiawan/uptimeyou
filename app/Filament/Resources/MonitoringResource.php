@@ -17,12 +17,13 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MonitoringResource\Pages;
 use App\Filament\Resources\MonitoringResource\RelationManagers;
+use App\Models\Result;
 
 class MonitoringResource extends Resource
 {
     protected static ?string $model = Monitoring::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clock';
 
     protected static ?string $navigationLabel = 'Monitoring';
 
@@ -81,6 +82,10 @@ class MonitoringResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make()
+                        ->form([
+                            TextInput::make('monitorings.response_time')
+                        ]),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                 ])

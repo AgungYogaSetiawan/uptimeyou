@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MonitoringResource\Pages;
 use App\Filament\Resources\MonitoringResource\RelationManagers;
+use Filament\Tables\Contracts\HasTable;
+use stdClass;
 
 class MonitoringResource extends Resource
 {
@@ -84,6 +86,16 @@ class MonitoringResource extends Resource
                 $query->where('user_id', $userId);
             })
             ->columns([
+                TextColumn::make('No')->state(
+                    static function (HasTable $livewire, stdClass $rowLoop): string {
+                        return (string) (
+                            $rowLoop->iteration +
+                            ($livewire->getTableRecordsPerPage() * (
+                                $livewire->getTablePage() - 1
+                            ))
+                        );
+                    }
+                ),
                 TextColumn::make('type_monitor'),
                 TextColumn::make('name'),
                 TextColumn::make('url'),
@@ -92,6 +104,10 @@ class MonitoringResource extends Resource
                 TextColumn::make('amount_send_notification'),
                 TextColumn::make('status_code'),
                 TextColumn::make('notification'),
+                TextColumn::make('results.response_time')
+                    ->label('Response Time (ms)'),
+                TextColumn::make('results.avg_response_time')
+                    ->label('Avg Response Time (ms)'),
                 TextColumn::make('description')
                     ->markdown(),
             ])
@@ -101,9 +117,11 @@ class MonitoringResource extends Resource
             ->actions([
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\ViewAction::make()
-                        ->form([
-                            TextInput::make('monitorings.response_time')
-                        ]),
+                        ->mutateRecordDataUsing(function (array $data): array {
+                            $data['user_id'] = auth()->id();
+
+                            return $data;
+                        }),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make(),
                 ])

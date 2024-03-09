@@ -4,10 +4,14 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Result;
+use Filament\Forms\Set;
 use Filament\Forms\Form;
 use App\Models\Monitoring;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
 use Filament\Tables\Columns\TextColumn;
@@ -17,7 +21,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MonitoringResource\Pages;
 use App\Filament\Resources\MonitoringResource\RelationManagers;
-use App\Models\Result;
 
 class MonitoringResource extends Resource
 {
@@ -37,7 +40,18 @@ class MonitoringResource extends Resource
                             ->options(['HTTP(s)' => 'HTTP(s)']),
                         TextInput::make('name')
                             ->required()
-                            ->maxValue(255),
+                            ->placeholder('Nama Lengkap')
+                            ->live()
+                            ->maxValue(255)
+                            ->afterStateUpdated(function (string $operation, $state, Forms\Set $set) {
+                                if ($operation !== 'create') {
+                                    return;
+                                }
+                                $set('slug', Str::slug($state));
+                            }),
+                        TextInput::make('slug')
+                            ->disabled()
+                            ->dehydrated(),
                         TextInput::make('url')
                             ->required(),
                         TextInput::make('schedule')
@@ -65,6 +79,10 @@ class MonitoringResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                $userId = Auth::user()->id;
+                $query->where('user_id', $userId);
+            })
             ->columns([
                 TextColumn::make('type_monitor'),
                 TextColumn::make('name'),

@@ -2,11 +2,13 @@
 
 namespace App\Filament\Widgets;
 
-use App\Filament\Resources\MonitoringResource;
-use App\Models\Monitoring;
 use Filament\Tables;
-use Filament\Tables\Columns\TextColumn;
+use App\Models\Monitoring;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\MonitoringResource;
 use Filament\Widgets\TableWidget as BaseWidget;
 
 class MonitoringOverview extends BaseWidget
@@ -21,6 +23,10 @@ class MonitoringOverview extends BaseWidget
             )
             ->defaultPaginationPageOption(10)
             ->defaultSort('created_at', 'desc')
+            ->modifyQueryUsing(function (Builder $query) {
+                $userId = Auth::user()->id;
+                $query->where('user_id', $userId);
+            })
             ->columns([
                 TextColumn::make('name')
                     ->searchable()

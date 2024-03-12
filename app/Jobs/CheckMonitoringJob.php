@@ -16,16 +16,14 @@ use Illuminate\Foundation\Bus\Dispatchable;
 class CheckMonitoringJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    public $response_time;
-    public $status;
+    public $monitoring;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($response_time, $status)
+    public function __construct($monitoring)
     {
-        $this->response_time = $response_time;
-        $this->status = $status;
+        $this->monitoring = $monitoring;
     }
 
     /**
@@ -33,17 +31,29 @@ class CheckMonitoringJob implements ShouldQueue
      */
     public function handle(): void
     {
-        // Gunakan data yang diterima dari command di sini
-        $data = [
-            'response_time' => $this->response_time,
-            'avg_response_time' => $this->response_time,
-            'status_code' => $this->status,
-            'monitoring_id' => 6,
-            'user_id' => 1
+        // Lakukan HTTP request ke website yang ingin dimonitoringor
+        $start = microtime(true);
+        $response = Http::get($this->monitoring['url']);
+        $end = microtime(true);
+        $response_time = round($end - $start, 2);
+        $status = $response->status();
+        $created_at = date('Y-m-d H:i:s');
+        $updated_at = date('Y-m-d H:i:s');
+        $monitoring_id = $this->monitoring['id'];
+        $user_id = $this->monitoring['user_id'];
+        // Gunakan monitoring yang diterima dari command di sini
+        $monitoring = [
+            'response_time' => $response_time,
+            'avg_response_time' => $response_time,
+            'status_code' => $status,
+            'created_at' => $created_at,
+            'updated_at' => $updated_at,
+            'monitoring_id' => $monitoring_id,
+            'user_id' => $user_id,
         ];
-        $save = Result::insert($data);
+        $save = Result::create($monitoring);
         if ($save) {
-            Log::info("Response Time: {$this->response_time} seconds, Status: {$this->status}");
+            Log::info("Response Time: {$response_time} seconds, Status: {$status}");
         } else {
             Log::info("Website Down!");
         }

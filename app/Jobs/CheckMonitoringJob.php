@@ -31,17 +31,17 @@ class CheckMonitoringJob implements ShouldQueue
      */
     public function handle(): void
     {
-        // Lakukan HTTP request ke website yang ingin dimonitoringor
+        // Lakukan HTTP request ke website yang ingin dimonitoring
         $start = microtime(true);
         $response = Http::get($this->monitoring['url']);
         $end = microtime(true);
-        $response_time = round($end - $start, 2);
-        $status = $response->status();
+        $response_time = round($end - $start, 2); // waktu response
+        $status = $response->status(); // status kode
         $created_at = date('Y-m-d H:i:s');
         $updated_at = date('Y-m-d H:i:s');
         $monitoring_id = $this->monitoring['id'];
         $user_id = $this->monitoring['user_id'];
-        // Gunakan monitoring yang diterima dari command di sini
+        // Menyimpan hasil monitoring ke tabel result monitoring
         $monitoring = [
             'response_time' => $response_time,
             'avg_response_time' => $response_time,
@@ -52,6 +52,9 @@ class CheckMonitoringJob implements ShouldQueue
             'user_id' => $user_id,
         ];
         $save = Result::create($monitoring);
+        // $save_monitoring_status_code = Monitoring::find($monitoring_id);
+        // $save_monitoring_status_code->status_code = $status;
+        // $save_monitoring_status_code->save();
         if ($save) {
             Log::info("Response Time: {$response_time} seconds, Status: {$status}");
         } else {

@@ -31,15 +31,21 @@ class CheckMonitoring extends Command
      */
     public function handle()
     {
-        $monitoring = Monitoring::all()->first();
-        $result_monitoring = Result::all()->last();
-        // ambil waktu terakhir data result disimpan kemudian kurangi dengan waktu yang di inginkan dari monitoring data schedule
-        $timestamp_result_monitoring = Carbon::parse($result_monitoring['created_at']);
-        $timestamp_result_monitoring->subSeconds($monitoring['schedule']);
-        if ($timestamp_result_monitoring > $result_monitoring['created_at']) {
-            dispatch(new CheckMonitoringJob($monitoring));
-        } else {
-            Log::info('Continue');
+        $monitorings = Monitoring::all(); // Ambil data monitoring pertama
+
+        // Ambil waktu terakhir data result disimpan
+        $current_time = now();
+
+        foreach ($monitorings as $monitoring) {
+            $result_monitoring = Result::where('monitoring_id', $monitoring->id)->latest()->first();
+            if ($result_monitoring) {
+                dispatch(new CheckMonitoringJob($monitoring));
+                continue;
+            }
+            if ($current_time->diffInSeconds($result_monitoring->created_at) > $monitoring->schedule) {
+                // Jika waktu terakhir hasil monitoring melebihi jadwal monitoring, kirim data monitoring ke pekerjaan
+                dispatch(new CheckMonitoringJob($monitoring));
+            }
         }
     }
 }

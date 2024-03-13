@@ -60,18 +60,8 @@ class MonitoringResource extends Resource
                             ->required(),
                         TextInput::make('tries'),
                         TextInput::make('amount_send_notification'),
-                        Select::make('status_code')
-                            ->options([
-                                '200-299' => '200-299',
-                                '300-399' => '300-399',
-                                '400-499' => '400-499',
-                                '500-599' => '500-599'
-                            ]),
-                        Select::make('notification')
-                            ->options([
-                                'email' => 'email',
-                                'discord' => 'discord'
-                            ])
+                        TextInput::make('status_code'),
+                        TextInput::make('email')
                             ->columnSpanFull(),
                         RichEditor::make('description')
                             ->columnSpan('full'),
@@ -105,7 +95,7 @@ class MonitoringResource extends Resource
                 TextColumn::make('amount_send_notification'),
                 TextColumn::make('status_code')
                     ->label('Status Diterima'),
-                TextColumn::make('notification'),
+                TextColumn::make('email'),
                 TextColumn::make('results.response_time')
                     ->label('Response Time (ms)'),
                 TextColumn::make('results.avg_response_time')

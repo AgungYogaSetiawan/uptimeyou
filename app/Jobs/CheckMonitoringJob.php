@@ -51,13 +51,18 @@ class CheckMonitoringJob implements ShouldQueue
             'user_id' => $user_id,
         ];
         $save = Result::create($monitoring);
-        // $save_monitoring_status_code = Monitoring::find($monitoring_id);
-        // $save_monitoring_status_code->status_code = $status;
-        // $save_monitoring_status_code->save();
+        // tampilkan pesan jika berhasil di simpan
         if ($save) {
             Log::info("Response Time: {$response_time} seconds, Status: {$status}");
         } else {
             Log::info("Website Down!");
         }
+
+        // menghitung rata rata response_time per id
+        $avg = Result::where('monitoring_id', $monitoring_id)->sum('response_time') / Result::where('monitoring_id', $monitoring_id)->count();
+        // simpan rata rata response time ke tabel monitoring
+        $monitor_id = Monitoring::findOrFail($monitoring_id);
+        $monitor_id->avg_response_time = $avg;
+        $monitor_id->save();
     }
 }

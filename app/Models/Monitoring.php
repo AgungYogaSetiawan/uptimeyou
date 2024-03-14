@@ -11,7 +11,7 @@ class Monitoring extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['type_monitor', 'name', 'url', 'schedule', 'tries', 'status_code', 'notification', 'description', 'slug', 'user_id'];
+    protected $fillable = ['type_monitor', 'name', 'url', 'schedule', 'tries', 'status_code', 'notification', 'description', 'slug', 'user_id', 'avg_response_time'];
 
     public function results(): HasMany
     {

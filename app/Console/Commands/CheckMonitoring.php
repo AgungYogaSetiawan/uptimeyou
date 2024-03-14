@@ -38,10 +38,12 @@ class CheckMonitoring extends Command
 
         foreach ($monitorings as $monitoring) {
             $result_monitoring = Result::where('monitoring_id', $monitoring->id)->latest()->first();
-            if ($result_monitoring) {
+            // jika tidak ada data result monitoring maka arahkan ke job
+            if (!$result_monitoring) {
                 dispatch(new CheckMonitoringJob($monitoring));
                 continue;
             }
+            // jika ada data result monitoring maka bandingkan waktu sekarang dengan waktu terakhir dibuat
             if ($current_time->diffInSeconds($result_monitoring->created_at) > $monitoring->schedule) {
                 // Jika waktu terakhir hasil monitoring melebihi jadwal monitoring, kirim data monitoring ke pekerjaan
                 dispatch(new CheckMonitoringJob($monitoring));

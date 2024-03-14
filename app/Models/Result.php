@@ -11,7 +11,7 @@ class Result extends Model
 {
     use HasFactory;
     protected $table = 'results_monitorings';
-    protected $fillable = ['response_time', 'avg_response_time', 'status_code', 'monitoring_id', 'user_id'];
+    protected $fillable = ['response_time', 'status_code', 'monitoring_id', 'user_id'];
 
     public function monitorings(): BelongsTo
     {

@@ -33,7 +33,6 @@ class ResultResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('response_time'),
-                TextColumn::make('avg_response_time'),
                 TextColumn::make('status_code'),
                 TextColumn::make('created_at'),
                 TextColumn::make('updated_at'),

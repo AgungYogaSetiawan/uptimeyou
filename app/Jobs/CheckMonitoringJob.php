@@ -44,7 +44,6 @@ class CheckMonitoringJob implements ShouldQueue
         // Menyimpan hasil monitoring ke tabel result monitoring
         $monitoring = [
             'response_time' => $response_time,
-            'avg_response_time' => $response_time,
             'status_code' => $status,
             'created_at' => $created_at,
             'updated_at' => $updated_at,

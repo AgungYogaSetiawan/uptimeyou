@@ -59,10 +59,8 @@ class MonitoringResource extends Resource
                         TextInput::make('schedule')
                             ->required(),
                         TextInput::make('tries'),
-                        TextInput::make('amount_send_notification'),
                         TextInput::make('status_code'),
-                        TextInput::make('email')
-                            ->columnSpanFull(),
+                        TextInput::make('email'),
                         RichEditor::make('description')
                             ->columnSpan('full'),
                     ])->columns(2)
@@ -92,14 +90,13 @@ class MonitoringResource extends Resource
                 TextColumn::make('url'),
                 TextColumn::make('schedule'),
                 TextColumn::make('tries'),
-                TextColumn::make('amount_send_notification'),
                 TextColumn::make('status_code')
                     ->label('Status Diterima'),
                 TextColumn::make('email'),
                 TextColumn::make('results.response_time')
                     ->label('Response Time (ms)'),
-                TextColumn::make('results.avg_response_time')
-                    ->label('Avg Response Time (ms)'),
+                // TextColumn::make('results.avg_response_time')
+                //     ->label('Avg Response Time (ms)'),
                 TextColumn::make('results.status_code')
                     ->label('Status Code'),
                 TextColumn::make('description')

@@ -92,9 +92,9 @@ class MonitoringResource extends Resource
                     ->label('Status Code'),
                 TextColumn::make('email'),
                 TextColumn::make('results.response_time')
-                    ->label('Response Time (ms)'),
+                    ->label('Response Time (s)'),
                 TextColumn::make('avg_response_time')
-                    ->label('Avg Response Time (ms)'),
+                    ->label('Avg Response Time (s)'),
                 TextColumn::make('description')
                     ->markdown(),
             ])

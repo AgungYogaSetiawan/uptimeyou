@@ -48,21 +48,22 @@ class CheckMonitoringJob implements ShouldQueue
                 'user_id' => $this->monitoring->user_id,
             ];
 
-            // cek response berhasil atau tidak
             if ($response->successful()) {
-                Result::create($monitoringData); // simpan ke tabel result
-            } else if ($this->try < $this->monitoring->tries) { // cek gagal dan apakah try masih kurang dari tries di tabel monitoring
+                Result::create($monitoringData);
+                // menghitung rata rata response_time per id dan simpan rata rata response time ke tabel monitoring
+                $avg_response = Result::where('monitoring_id', $monitoring_id)->avg('response_time');
+                $this->monitoring->update(['avg_response_time' => $avg_response]);
+                return;
+            }
+            if ($this->try < $this->monitoring->tries) {
                 $this->try++;
                 dispatch(new CheckMonitoringJob($this->monitoring, $this->try));
                 Log::info('Percobaan ke ' . $this->try);
-            } else { // jika maksimal try terpenuhi maka jalankan blok ini
-                Result::create($monitoringData); // simpan ke tabel result
-                // akan menjalankan job kirim email
-                Log::info('Percobaan sudah habis, pesan akan dikirim ke email');
+                return;
             }
-            // menghitung rata rata response_time per id dan simpan rata rata response time ke tabel monitoring
-            $avg_response = Result::where('monitoring_id', $monitoring_id)->avg('response_time');
-            $this->monitoring->update(['avg_response_time' => $avg_response]);
+            Result::create($monitoringData);
+            // jalankan job kirim email
+            Log::info('Percobaan sudah habis, pesan akan dikirim ke email');
             Log::info('Response time ' . $response_time . ' Status ' . $status);
         } catch (\Exception $e) {
             Log::error('Failed to find Result: ' . $e->getMessage());

@@ -33,55 +33,48 @@ class CheckMonitoringJob implements ShouldQueue
      */
     public function handle(): void
     {
-        // Lakukan HTTP request ke website yang ingin dimonitoring
-        $start = microtime(true); // waktu mulai akses website
-        $response = Http::get($this->monitoring['url']);
-        $end = microtime(true); // waktu selesai akses website
-        $response_time = round($end - $start, 2); // waktu response
-        $status = $response->status(); // status kode
-        $created_at = now();
-        $updated_at = now();
-        $monitoring_id = $this->monitoring['id'];
-        $user_id = $this->monitoring['user_id'];
-        $monitor_id = Monitoring::findOrFail($monitoring_id);
+
+        $monitoring_id = $this->monitoring->id;
+        $user_id = $this->monitoring->user_id;
 
         // cek status code di result monitoring
         try {
-            $response = Http::get($this->monitoring['url']);
-            $response_time = round(microtime(true) - $start, 2);
+            $start = microtime(true); // waktu mulai akses website
+            $response = Http::get($this->monitoring->url);
+            $end = microtime(true); // waktu mulai akses website
+            $response_time = round($end - $start, 2); // waktu response
             $status = $response->status();
-            $created_at = now();
-            $updated_at = now();
 
+            // tampung data monitoring
             $monitoringData = [
                 'response_time' => $response_time,
                 'status_code' => $status,
-                'created_at' => $created_at,
-                'updated_at' => $updated_at,
                 'monitoring_id' => $monitoring_id,
                 'user_id' => $user_id,
             ];
 
+            // cek response berhasil atau tidak
             if ($response->successful()) {
                 Result::create($monitoringData); // simpan ke tabel result
                 // menghitung rata rata response_time per id
                 $avg_response = Result::where('monitoring_id', $monitoring_id)->sum('response_time') / Result::where('monitoring_id', $monitoring_id)->count();
                 // simpan rata rata response time ke tabel monitoring
-                $monitor_id->avg_response_time = $avg_response;
-                $monitor_id->save();
+                $this->monitoring->avg_response_time = $avg_response;
+                $this->monitoring->save();
                 Log::info('Response time ' . $response_time . ' Status ' . $status);
             } else {
-                if ($this->try < $monitor_id->tries) {
+                if ($this->try < $this->monitoring->tries) { // jika try masih kurang dengan tries yang diminta maka ulangi lagi
                     $this->try++;
                     dispatch(new CheckMonitoringJob($this->monitoring, $this->try));
                     Log::info('Percobaan ke ' . $this->try);
-                } else {
+                } else { // jika maksimal try terpenuhi maka jalankan blok ini
                     Result::create($monitoringData); // simpan ke tabel result
                     // menghitung rata rata response_time per id
                     $avg_response = Result::where('monitoring_id', $monitoring_id)->sum('response_time') / Result::where('monitoring_id', $monitoring_id)->count();
                     // simpan rata rata response time ke tabel monitoring
-                    $monitor_id->avg_response_time = $avg_response;
-                    $monitor_id->save();
+                    $this->monitoring->avg_response_time = $avg_response;
+                    $this->monitoring->save();
+                    // akan menjalankan job kirim email
                     Log::info('Percobaan sudah habis, pesan akan dikirim ke email');
                 }
             }

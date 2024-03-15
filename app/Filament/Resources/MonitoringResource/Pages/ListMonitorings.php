@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\MonitoringResource\Pages;
 
-use App\Filament\Resources\MonitoringResource;
 use Filament\Actions;
+use App\Models\Monitoring;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\MonitoringResource;
 
 class ListMonitorings extends ListRecords
 {
@@ -13,6 +14,7 @@ class ListMonitorings extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
+
             Actions\CreateAction::make(),
         ];
     }

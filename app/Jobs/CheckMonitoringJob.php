@@ -52,7 +52,7 @@ class CheckMonitoringJob implements ShouldQueue
             // cek response berhasil atau tidak
             if ($response->successful()) {
                 Result::create($monitoringData); // simpan ke tabel result
-            } else if ($this->try < $this->monitoring->tries) {
+            } else if ($this->try < $this->monitoring->tries) { // cek gagal dan apakah try masih kurang dari tries di tabel monitoring
                 $this->try++;
                 dispatch(new CheckMonitoringJob($this->monitoring, $this->try));
                 Log::info('Percobaan ke ' . $this->try);

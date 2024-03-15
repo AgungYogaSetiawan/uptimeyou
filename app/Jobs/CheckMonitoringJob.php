@@ -39,14 +39,13 @@ class CheckMonitoringJob implements ShouldQueue
             $response_time = round($end - $start, 2); // waktu response
             $status = $response->status();
             $monitoring_id = $this->monitoring->id;
-            $user_id = $this->monitoring->user_id;
 
             // tampung data monitoring
             $monitoringData = [
                 'response_time' => $response_time,
                 'status_code' => $status,
                 'monitoring_id' => $monitoring_id,
-                'user_id' => $user_id,
+                'user_id' => $this->monitoring->user_id,
             ];
 
             // cek response berhasil atau tidak

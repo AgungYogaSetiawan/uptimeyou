@@ -33,10 +33,6 @@ class CheckMonitoringJob implements ShouldQueue
      */
     public function handle(): void
     {
-
-        $monitoring_id = $this->monitoring->id;
-        $user_id = $this->monitoring->user_id;
-
         // cek status code di result monitoring
         try {
             $start = microtime(true); // waktu mulai akses website
@@ -44,6 +40,8 @@ class CheckMonitoringJob implements ShouldQueue
             $end = microtime(true); // waktu mulai akses website
             $response_time = round($end - $start, 2); // waktu response
             $status = $response->status();
+            $monitoring_id = $this->monitoring->id;
+            $user_id = $this->monitoring->user_id;
 
             // tampung data monitoring
             $monitoringData = [

@@ -17,13 +17,15 @@ class CheckMonitoringJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     public $monitoring;
+    public $try;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($monitoring)
+    public function __construct($monitoring, $try = 1)
     {
         $this->monitoring = $monitoring;
+        $this->try = $try;
     }
 
     /**
@@ -41,7 +43,6 @@ class CheckMonitoringJob implements ShouldQueue
         $updated_at = now();
         $monitoring_id = $this->monitoring['id'];
         $user_id = $this->monitoring['user_id'];
-        $arr_success = range(200, 299);
         // Menyimpan hasil monitoring ke tabel result monitoring
         $monitoring = [
             'response_time' => $response_time,
@@ -51,7 +52,7 @@ class CheckMonitoringJob implements ShouldQueue
             'monitoring_id' => $monitoring_id,
             'user_id' => $user_id,
         ];
-        $save_result = Result::create($monitoring);
+        Result::create($monitoring);
 
         // menghitung rata rata response_time per id
         $avg_response = Result::where('monitoring_id', $monitoring_id)->sum('response_time') / Result::where('monitoring_id', $monitoring_id)->count();
@@ -62,15 +63,18 @@ class CheckMonitoringJob implements ShouldQueue
 
         // cek status code di result monitoring
         try {
-            $getResult = Result::findOrFail($save_result->id);
-            if (!in_array($getResult->status_code, $arr_success)) {
-                // lakukan pengulangan sebanyak tries yang di input user
-                for ($i = 0; $i < $monitor_id->tries; $i++) {
-                    dispatch(new CheckMonitoringJob($this->monitoring));
-                }
-                if (!in_array($getResult->status_code, $arr_success)) {
-                    // jika masih gagal status code nya maka kirim email job
-                    Log::info('Pesan akan dikirim melalui email job');
+            // cek response
+            if ($response->successful()) {
+                // response berhasil
+                Log::info('Response time ' . $response_time . ' Status ' . $status);
+            } else { // jika response gagal
+                // jika try kurang dari sama dengan tries di tabel monitoring
+                if ($this->try < $monitor_id->tries) {
+                    $this->try++;
+                    dispatch(new CheckMonitoringJob($this->monitoring, $this->try));
+                    Log::info('Percobaan ke ' . $this->try);
+                } else { // max percobaan
+                    Log::info('Percobaan sudah habis, pesan akan dikirim ke email');
                 }
             }
         } catch (\Exception $e) {

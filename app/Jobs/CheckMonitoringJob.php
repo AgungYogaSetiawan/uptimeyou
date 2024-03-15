@@ -2,8 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Console\Commands\CheckMonitoring;
-use App\Models\Monitoring;
 use App\Models\Result;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Facades\Log;
@@ -54,28 +52,19 @@ class CheckMonitoringJob implements ShouldQueue
             // cek response berhasil atau tidak
             if ($response->successful()) {
                 Result::create($monitoringData); // simpan ke tabel result
-                // menghitung rata rata response_time per id
-                $avg_response = Result::where('monitoring_id', $monitoring_id)->sum('response_time') / Result::where('monitoring_id', $monitoring_id)->count();
-                // simpan rata rata response time ke tabel monitoring
-                $this->monitoring->avg_response_time = $avg_response;
-                $this->monitoring->save();
-                Log::info('Response time ' . $response_time . ' Status ' . $status);
-            } else {
-                if ($this->try < $this->monitoring->tries) { // jika try masih kurang dengan tries yang diminta maka ulangi lagi
-                    $this->try++;
-                    dispatch(new CheckMonitoringJob($this->monitoring, $this->try));
-                    Log::info('Percobaan ke ' . $this->try);
-                } else { // jika maksimal try terpenuhi maka jalankan blok ini
-                    Result::create($monitoringData); // simpan ke tabel result
-                    // menghitung rata rata response_time per id
-                    $avg_response = Result::where('monitoring_id', $monitoring_id)->sum('response_time') / Result::where('monitoring_id', $monitoring_id)->count();
-                    // simpan rata rata response time ke tabel monitoring
-                    $this->monitoring->avg_response_time = $avg_response;
-                    $this->monitoring->save();
-                    // akan menjalankan job kirim email
-                    Log::info('Percobaan sudah habis, pesan akan dikirim ke email');
-                }
+            } else if ($this->try < $this->monitoring->tries) {
+                $this->try++;
+                dispatch(new CheckMonitoringJob($this->monitoring, $this->try));
+                Log::info('Percobaan ke ' . $this->try);
+            } else { // jika maksimal try terpenuhi maka jalankan blok ini
+                Result::create($monitoringData); // simpan ke tabel result
+                // akan menjalankan job kirim email
+                Log::info('Percobaan sudah habis, pesan akan dikirim ke email');
             }
+            // menghitung rata rata response_time per id dan simpan rata rata response time ke tabel monitoring
+            $avg_response = Result::where('monitoring_id', $monitoring_id)->avg('response_time');
+            $this->monitoring->update(['avg_response_time' => $avg_response]);
+            Log::info('Response time ' . $response_time . ' Status ' . $status);
         } catch (\Exception $e) {
             Log::error('Failed to find Result: ' . $e->getMessage());
         }

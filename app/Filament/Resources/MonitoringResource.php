@@ -26,6 +26,7 @@ use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MonitoringResource\Pages;
 use App\Filament\Resources\MonitoringResource\RelationManagers;
+use App\Filament\Resources\MonitoringResource\Widgets\MonitoringChart;
 
 class MonitoringResource extends Resource
 {
@@ -114,6 +115,12 @@ class MonitoringResource extends Resource
                         ->icon('heroicon-o-pause-circle'),
                 ])
             ])
+            // ->recordUrl(function ($record) {
+            //     // if ($record->trashed()) {
+            //     //     return null;
+            //     // }
+            //     return Pages\ViewMonitoring::getUrl([$record->id]);
+            // })
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
@@ -143,6 +150,13 @@ class MonitoringResource extends Resource
     {
         return [
             //
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            MonitoringChart::class,
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use stdClass;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Result;
@@ -10,19 +11,21 @@ use Filament\Forms\Form;
 use App\Models\Monitoring;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Section;
+use Filament\Infolists\Components\Section as SectionInfoLIst;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Contracts\HasTable;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\RichEditor;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\MonitoringResource\Pages;
 use App\Filament\Resources\MonitoringResource\RelationManagers;
-use Filament\Tables\Contracts\HasTable;
-use stdClass;
 
 class MonitoringResource extends Resource
 {
@@ -103,12 +106,7 @@ class MonitoringResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
-                    Tables\Actions\ViewAction::make()
-                        ->mutateRecordDataUsing(function (array $data): array {
-                            $data['user_id'] = auth()->id();
-
-                            return $data;
-                        }),
+                    Tables\Actions\ViewAction::make(),
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make()
                         ->requiresConfirmation(),
@@ -120,6 +118,24 @@ class MonitoringResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                SectionInfoLIst::make('Info Monitroing')
+                    ->schema([
+                        TextEntry::make('avg_response_time'),
+                        TextEntry::make('type_monitor'),
+                        TextEntry::make('name'),
+                        TextEntry::make('url')
+                            ->label('URL'),
+                        TextEntry::make('schedule')
+                            ->label('Repetition in second'),
+                        TextEntry::make('tries'),
+                    ])->columns(2)
             ]);
     }
 
@@ -135,6 +151,7 @@ class MonitoringResource extends Resource
         return [
             'index' => Pages\ListMonitorings::route('/'),
             'create' => Pages\CreateMonitoring::route('/create'),
+            'view' => Pages\ViewMonitoring::route('/{record}'),
             'edit' => Pages\EditMonitoring::route('/{record}/edit'),
         ];
     }

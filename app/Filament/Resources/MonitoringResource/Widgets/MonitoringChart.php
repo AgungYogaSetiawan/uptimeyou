@@ -17,6 +17,8 @@ class MonitoringChart extends ChartWidget
 
     public ?Model $record = null;
 
+    protected static ?string $pollingInterval = '2s';
+
     protected function getData(): array
     {
         $getResponseTime = Result::where('monitoring_id', $this->record->getOriginal('id'))->pluck('response_time', 'created_at')->toArray();

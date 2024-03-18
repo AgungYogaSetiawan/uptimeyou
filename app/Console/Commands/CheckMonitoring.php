@@ -38,10 +38,6 @@ class CheckMonitoring extends Command
 
         foreach ($monitorings as $monitoring) {
             $result_monitoring = Result::where('monitoring_id', $monitoring->id)->latest()->first();
-            // cek apakah kolom pause di tabel monitoring 1 (true) atau 0 (false)
-            if ($monitoring->pause == 1 and $monitoring->id == $result_monitoring->monitoring_id) {
-                return;
-            }
             // jika tidak ada data result monitoring maka arahkan ke job
             if (!$result_monitoring) {
                 dispatch(new CheckMonitoringJob($monitoring));

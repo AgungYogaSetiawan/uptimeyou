@@ -48,6 +48,11 @@ class CheckMonitoringJob implements ShouldQueue
                 'user_id' => $this->monitoring->user_id,
             ];
 
+            // cek apakah kolom pause di tabel monitoring 1 (true) atau 0 (false)
+            if ($this->monitoring->pause == 1 and $this->monitoring->id == $monitoring_id) {
+                return;
+            }
+
             if ($response->successful()) {
                 Result::create($monitoringData);
                 // menghitung rata rata response_time per id dan simpan rata rata response time ke tabel monitoring

@@ -18,7 +18,7 @@ class ViewMonitoring extends ViewRecord
         return [
             Action::make('Pause')
                 ->action(function (Monitoring $monitoring): void {
-                    $monitoring->update(['pause' => 1]);
+                    $monitoring::where('id', $this->record->getOriginal('id'))->update(['pause' => 1]);
                     Notification::make()
                         ->title('Monitoring Paused')
                         ->success()

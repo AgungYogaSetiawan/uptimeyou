@@ -92,11 +92,11 @@ class MonitoringResource extends Resource
                 TextColumn::make('url'),
                 TextColumn::make('schedule'),
                 TextColumn::make('tries'),
-                TextColumn::make('results.status_code')
-                    ->label('Status Code'),
+                // TextColumn::make('results.status_code')
+                //     ->label('Status Code'),
                 TextColumn::make('email'),
-                TextColumn::make('results.response_time')
-                    ->label('Response Time (s)'),
+                // TextColumn::make('results.response_time')
+                //     ->label('Response Time (s)'),
                 TextColumn::make('avg_response_time')
                     ->label('Avg Response Time (s)'),
                 TextColumn::make('description')
@@ -111,8 +111,6 @@ class MonitoringResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\DeleteAction::make()
                         ->requiresConfirmation(),
-                    Tables\Actions\Action::make('Pause')
-                        ->icon('heroicon-o-pause-circle'),
                 ])
             ])
             // ->recordUrl(function ($record) {

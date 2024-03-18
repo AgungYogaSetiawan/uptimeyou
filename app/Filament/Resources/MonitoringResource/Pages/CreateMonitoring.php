@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\MonitoringResource\Pages;
 
-use App\Filament\Resources\MonitoringResource;
-use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\MonitoringResource;
 
 class CreateMonitoring extends CreateRecord
 {

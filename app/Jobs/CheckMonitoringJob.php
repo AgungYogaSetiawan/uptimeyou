@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Support\Facades\Mail;
 
 class CheckMonitoringJob implements ShouldQueue
 {
@@ -69,7 +70,10 @@ class CheckMonitoringJob implements ShouldQueue
             }
             Result::create($monitoringData);
             // jalankan job kirim email
-            Log::info('Percobaan sudah habis, pesan akan dikirim ke email');
+            Mail::raw('Your website is down', function ($message) {
+                $message->to($this->monitoring->email)->subject('Notification of website down');
+            });
+            Log::info('Berhasil mengirim email pemberitahuan');
             Log::info('Response time ' . $response_time . ' Status ' . $status);
         } catch (\Exception $e) {
             Log::error('Failed to find Result: ' . $e->getMessage());

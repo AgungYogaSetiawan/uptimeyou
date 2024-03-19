@@ -125,12 +125,11 @@ class MonitoringResource extends Resource
                         TextEntry::make('avg_response_time'),
                         TextEntry::make('type_monitor'),
                         TextEntry::make('name'),
-                        TextEntry::make('url')
-                            ->label('URL'),
                         TextEntry::make('schedule')
                             ->label('Repetition in second'),
                         TextEntry::make('tries'),
-                    ])->columns(3)
+                        TextEntry::make('status'),
+                    ])->columns(4)
             ]);
     }
 

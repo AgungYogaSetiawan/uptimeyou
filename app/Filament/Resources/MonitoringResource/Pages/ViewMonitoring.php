@@ -13,6 +13,11 @@ class ViewMonitoring extends ViewRecord
 {
     protected static string $resource = MonitoringResource::class;
 
+    public function getSubheading(): ?string
+    {
+        return __('URL : ' . $this->record->getOriginal('url'));
+    }
+
     protected function getHeaderActions(): array
     {
         return [

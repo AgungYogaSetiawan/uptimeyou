@@ -49,7 +49,7 @@ class CheckMonitoringJob implements ShouldQueue
             ];
 
             // cek apakah kolom pause di tabel monitoring 1 (true) atau 0 (false)
-            if ($this->monitoring->pause == 1 and $this->monitoring->id == $monitoring_id) {
+            if ($this->monitoring->status == 'pause' and $this->monitoring->id == $monitoring_id) {
                 return;
             }
 
@@ -63,6 +63,7 @@ class CheckMonitoringJob implements ShouldQueue
             if ($this->try < $this->monitoring->tries) {
                 $this->try++;
                 dispatch(new CheckMonitoringJob($this->monitoring, $this->try));
+                $this->monitoring::where('id', $monitoring_id)->update(['status' => 'not active']);
                 Log::info('Percobaan ke ' . $this->try);
                 return;
             }

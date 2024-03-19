@@ -92,11 +92,7 @@ class MonitoringResource extends Resource
                 TextColumn::make('url'),
                 TextColumn::make('schedule'),
                 TextColumn::make('tries'),
-                // TextColumn::make('results.status_code')
-                //     ->label('Status Code'),
                 TextColumn::make('email'),
-                // TextColumn::make('results.response_time')
-                //     ->label('Response Time (s)'),
                 TextColumn::make('avg_response_time')
                     ->label('Avg Response Time (s)'),
                 TextColumn::make('description')
@@ -124,7 +120,7 @@ class MonitoringResource extends Resource
     {
         return $infolist
             ->schema([
-                SectionInfoLIst::make('Info Monitroing')
+                SectionInfoLIst::make('Info Monitoring')
                     ->schema([
                         TextEntry::make('avg_response_time'),
                         TextEntry::make('type_monitor'),
@@ -134,7 +130,7 @@ class MonitoringResource extends Resource
                         TextEntry::make('schedule')
                             ->label('Repetition in second'),
                         TextEntry::make('tries'),
-                    ])->columns(2)
+                    ])->columns(3)
             ]);
     }
 

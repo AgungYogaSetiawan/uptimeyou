@@ -113,12 +113,6 @@ class MonitoringResource extends Resource
                         ->requiresConfirmation(),
                 ])
             ])
-            // ->recordUrl(function ($record) {
-            //     // if ($record->trashed()) {
-            //     //     return null;
-            //     // }
-            //     return Pages\ViewMonitoring::getUrl([$record->id]);
-            // })
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

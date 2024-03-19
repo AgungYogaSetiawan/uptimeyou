@@ -18,7 +18,7 @@ class ViewMonitoring extends ViewRecord
         return [
             Action::make('Play')
                 ->action(function (Monitoring $monitoring): void {
-                    $monitoring::where('id', $this->record->getOriginal('id'))->update(['status' => 'play']);
+                    $monitoring::where('id', $this->record->getOriginal('id'))->update(['status' => 'active']);
                     Notification::make()
                         ->title('Continue Played')
                         ->success()

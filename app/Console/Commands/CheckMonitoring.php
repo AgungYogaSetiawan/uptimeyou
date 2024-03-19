@@ -3,12 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Jobs\CheckMonitoringJob;
-use App\Jobs\SendMailJob;
 use App\Models\Monitoring;
 use App\Models\Result;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -48,10 +46,7 @@ class CheckMonitoring extends Command
             // jika ada data result monitoring maka bandingkan waktu sekarang dengan waktu terakhir dibuat
             if ($current_time->diffInSeconds($result_monitoring->created_at) > $monitoring->schedule) {
                 // Jika waktu terakhir hasil monitoring melebihi jadwal monitoring, kirim data monitoring ke pekerjaan
-                Bus::chain([
-                    new CheckMonitoringJob($monitoring),
-                    new SendMailJob($monitoring->email)
-                ])->dispatch();
+                dispatch(new CheckMonitoringJob($monitoring));
             }
         }
     }

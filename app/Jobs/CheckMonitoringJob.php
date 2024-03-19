@@ -70,9 +70,7 @@ class CheckMonitoringJob implements ShouldQueue
             }
             Result::create($monitoringData);
             // jalankan job kirim email
-            Mail::raw('Your website is down', function ($message) {
-                $message->to($this->monitoring->email)->subject('Notification of website down');
-            });
+            dispatch(new SendMailJob($this->monitoring->email));
             Log::info('Berhasil mengirim email pemberitahuan');
             Log::info('Response time ' . $response_time . ' Status ' . $status);
         } catch (\Exception $e) {

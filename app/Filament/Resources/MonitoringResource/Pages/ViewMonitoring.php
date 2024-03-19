@@ -20,7 +20,7 @@ class ViewMonitoring extends ViewRecord
                 ->action(function (Monitoring $monitoring): void {
                     $monitoring::where('id', $this->record->getOriginal('id'))->update(['pause' => 1]);
                     Notification::make()
-                        ->title('Monitoring Paused')
+                        ->title('Paused successfully')
                         ->success()
                         ->send();
                 }),

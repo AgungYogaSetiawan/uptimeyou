@@ -25,21 +25,20 @@ class ViewMonitoring extends ViewRecord
                             ->title('Pause successfully')
                             ->success()
                             ->send();
-                    } else {
-                        $monitoring->update(['status' => 'active']);
-                        Notification::make()
-                            ->title('Resumed successfully')
-                            ->success()
-                            ->send();
+                        return;
                     }
+                    $monitoring->update(['status' => 'active']);
+                    Notification::make()
+                        ->title('Resumed successfully')
+                        ->success()
+                        ->send();
                 })
                 ->label(function (Monitoring $monitoring): string {
                     $monitoring::where('id', $this->record->getOriginal('id'));
-                    if ($monitoring->status == 'pause')
+                    if ($monitoring->status == 'pause') {
                         return 'Play';
-                    else {
-                        return 'Pause';
                     }
+                    return 'Pause';
                 }),
         ];
     }

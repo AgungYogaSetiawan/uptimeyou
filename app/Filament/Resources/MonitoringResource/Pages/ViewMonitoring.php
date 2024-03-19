@@ -16,6 +16,14 @@ class ViewMonitoring extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('Play')
+                ->action(function (Monitoring $monitoring): void {
+                    $monitoring::where('id', $this->record->getOriginal('id'))->update(['status' => 'play']);
+                    Notification::make()
+                        ->title('Continue Played')
+                        ->success()
+                        ->send();
+                }),
             Action::make('Pause')
                 ->action(function (Monitoring $monitoring): void {
                     $monitoring::where('id', $this->record->getOriginal('id'))->update(['status' => 'pause']);

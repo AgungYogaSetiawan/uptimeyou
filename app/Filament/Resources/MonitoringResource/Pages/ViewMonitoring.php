@@ -48,7 +48,7 @@ class ViewMonitoring extends ViewRecord
         ];
     }
 
-    protected function getHeaderWidgets(): array
+    protected function getFooterWidgets(): array
     {
         return [
             MonitoringChart::class,
